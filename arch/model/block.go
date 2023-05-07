@@ -18,7 +18,7 @@ type noncecode []byte
 // @property {hashcode} PrevHash - The hash of the previous block in the chain.
 // @property {noncecode} Nonce - A random number that is used to mine the block.
 type Block struct {
-	Transactions []Transaction `json:"transactions"`
+	Transaction Transaction `json:"transactions"`
 	Timestamp    time.Time     `json:"timestamp"`
 	Hash         hashcode      `json:"hash"`
 	PrevHash     hashcode      `json:"prev_hash"`
@@ -29,7 +29,7 @@ type Block struct {
 // generates the hash for the block
 func GenesisBlock() *Block {
 	block := new(Block)
-	block.Transactions = []Transaction{}
+	block.Transaction = Transaction{}
 	block.Timestamp = time.Now()
 	block.PrevHash = hashcode{}
 	block.Nonce = make(noncecode, 32)
@@ -39,9 +39,9 @@ func GenesisBlock() *Block {
 }
 
 // NewBlock creates a new block with the given transactions and previous block's hash
-func NewBlock(transactions []Transaction, previousHash hashcode) *Block {
+func NewBlock(transaction Transaction, previousHash hashcode) *Block {
 	block := new(Block)
-	block.Transactions = transactions
+	block.Transaction = transaction
 	block.Timestamp = time.Now()
 	block.PrevHash = previousHash
 	block.Hash = block.generateHash()
@@ -54,9 +54,7 @@ func (block *Block) generateHash() hashcode {
 	input := append(block.Nonce, block.PrevHash...)
 	input = append(input, block.Timestamp.String()...)
 
-	for _, transaction := range block.Transactions {
-		input = append(input, []byte(transaction.Message)...)
-	}
+	input = append(input, []byte(block.Transaction.Writable())...)
 
 	hash := sha256.Sum256(input)
 	return hash[:]
@@ -96,12 +94,14 @@ func (block *Block) Print() {
 	fmt.Printf("\tprevious hash: %x\n", block.PrevHash)
 	fmt.Printf("\thash: %x\n", block.Hash)
 
-	for _, transaction := range block.Transactions {
-		fmt.Printf("\ttransaction: %v\n", transaction.Message)
-	}
+	fmt.Printf("\ttransaction: %v\n", block.Transaction.Writable())
 }
 
 // IsValid Checks for altered contents within the block's transactions
 func (block *Block) IsValid() bool {
 	return bytes.Equal(block.Hash, block.generateHash())
+}
+
+func (block *Block) Read(filepath string) {
+	block.Transaction.Read(filepath)
 }
