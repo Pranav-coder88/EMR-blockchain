@@ -303,6 +303,7 @@
 package model
 
 import (
+	"strconv"
 	"time"
 )
 
@@ -572,9 +573,9 @@ type SubstanceUse struct {
 	Heroin           SubstanceInfo   `json:"Heroin"`
 	IllicitMethadone SubstanceInfo   `json:"IllicitMethadone"`
 	OtherOpioids     SubstanceInfo   `json:"OtherOpioids"`
-	Hallucinogens    SubstanceInfo   `json:"OtherOpioids"`
-	Inhalants        SubstanceInfo   `json:"Hallucinogens"`
-	Others           []SubstanceInfo `json:"Inhalants"`
+	Hallucinogens    SubstanceInfo   `json:"Hallucinogens"`
+	Inhalants        SubstanceInfo   `json:"Inhalants"`
+	Others           []SubstanceInfo `json:"Others"`
 }
 
 //type EMR struct {
@@ -595,4 +596,304 @@ type EMR struct {
 	FamilyHistory      FamilyHistory      `json:"FamilyHistory"`
 	SystemsReview      SystemsReview      `json:"SystemsReview"`
 	SubstanceUse       SubstanceUse       `json:"SubstanceUse"`
+}
+
+func (pd *PersonalData) ByteMe() []byte {
+	bytes := []byte(pd.CreatedDate.String())
+	bytes = append(bytes, []byte(pd.Name)...)
+	bytes = append(bytes, []byte(pd.Birthdate)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(pd.Age)))...)
+	bytes = append(bytes, []byte(pd.Gender)...)
+	bytes = append(bytes, []byte(pd.ModeOfReach)...)
+	bytes = append(bytes, []byte(pd.SymptomsBrief)...)
+	bytes = append(bytes, []byte(pd.PrevPractitioners)...)
+	bytes = append(bytes, []byte(pd.PsychHospitalizations)...)
+	bytes = append(bytes, []byte(pd.StatusECT)...)
+	bytes = append(bytes, []byte(pd.StatusPsychotherapy)...)
+	return bytes
+}
+
+func (cm *CurrentMedications) ByteMe() []byte {
+	bytes := []byte{}
+	
+	for _, allergies := range cm.DrugAllergies {
+		bytes = append(bytes, []byte(allergies)...)
+	}
+
+	for _, meds := range cm.Medications {
+		bytes = append(bytes, []byte(meds.Name + meds.Dose + meds.Duration)...)
+	}
+
+	return bytes
+}
+
+func (pmh *PastMedicalHistory) ByteMe() []byte {
+	bytes := []byte{}
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Diabetes))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.HighBloodPressure))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.HighCholesterol))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Hypothyroidism))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Goiter))...)
+	bytes = append(bytes, []byte(pmh.CancerType)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Leukemia))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Psoriasis))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Angina))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.HeartProblems))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.HeartMurmur))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Pneumonia))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.PulmonaryEmbolism))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Asthma))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Emphysema))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Stroke))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Epilepsy))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Cataracts))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.KidneyDisease))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.KidneyStones))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.CrohnsDisease))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Colitis))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Anemia))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Jaundice))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Hepatitis))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.PepticUlcer))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.RheumaticFever))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Tuberculosis))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pmh.Aids))...)
+	for _, each := range pmh.Others {
+		bytes = append(bytes, []byte(each)...)
+	}
+
+	return bytes
+}
+
+func (ph *PersonalHistory) ByteMe() []byte {
+	bytes := []byte{}
+	
+	bytes = append(bytes, []byte(ph.BirthProblems)...)
+	bytes = append(bytes, []byte(ph.PlaceOfBirth)...)
+	bytes = append(bytes, []byte(ph.MaritalStatus)...)
+	bytes = append(bytes, []byte(ph.LatestOccupation)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(ph.StatusWorking))...)
+	bytes = append(bytes, []byte(ph.HoursPerWeek)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(ph.StatusSSI))...)
+	bytes = append(bytes, []byte(ph.DescSSI)...)
+	bytes = append(bytes, []byte(ph.LegalProblems)...)
+	bytes = append(bytes, []byte(ph.Religion)...)
+
+	return bytes
+}
+
+func (fh *FamilyHistory) ByteMe() []byte {
+	bytes := []byte{}
+
+	bytes = append(bytes, []byte(strconv.Itoa(int(fh.Father.Age)))...)
+	bytes = append(bytes, []byte(fh.Father.HealthAndPsychiatric)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(fh.Father.AgeAtDeath)))...)
+	bytes = append(bytes, []byte(fh.Father.Cause)...)
+
+	return bytes
+}
+
+func (sr *SystemsReview) ByteMe() []byte {
+	bytes := []byte{}
+
+	bytes = append(bytes, []byte(sr.PreviousSymptoms.RecentWeightGain)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Fatigue))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Weakness))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Fever))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.NightSweats))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Numbness))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.JointPain))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.MuscleWeakness))...)
+	bytes = append(bytes, []byte(sr.PreviousSymptoms.JointSwelling)...)
+	
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.RingingInTheEars))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.LossOfHearing))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.EyePain))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.EyeRedness))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.LossOfVision))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.BlurredVision))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.EyeDryness))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.FrequentSoreThroats))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.ThroatHoarseness))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.DifficultyInSwallowing))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.PainInJaw))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.ChestPain))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Palpitations))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.ShortnessOfBreath))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Fainting))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.SwollenLegsOrFeet))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Cough))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Headaches))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Dizziness))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.LossOfConsciousness))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Tingling))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.MemoryLoss))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Nausea))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Heartburn))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.StomachPain))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Vomiting))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.YellowJaundice))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.IncreasingConstipation))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.PersistentDiarrhea))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.BlackStools))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.BlackStools))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.SkinRedness))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Rash))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Bumps))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.HairLoss))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.ColorChanges))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Anemia))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Clots))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.FrequentUrination))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.BloodInUrine))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.AbnormalPapSmear))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.IrregularPeriods))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.BleedingBetweenPeriods))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Pms))...)
+
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Depression))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.ExcessiveWorries))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.DifficultyFallingAsleep))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.DifficultyStayingAsleep))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.DifficultiesWithSexualArousal))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.PoorAppetite))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.FoodCravings))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.FrequentCrying))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Sensitivity))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.SuicidalThoughts))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Stress))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Irritability))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.PoorConcentration))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.RacingThoughts))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Hallucinations))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.RapidSpeech))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.GuiltyThoughts))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Paranoia))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.MoodSwings))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.Anxiety))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(sr.PreviousSymptoms.RiskyBehavior))...)
+
+	bytes = append(bytes, []byte(sr.PreviousSymptoms.OtherProblems)...)
+
+	return bytes
+}
+
+func (su *SubstanceUse) ByteMe() []byte {
+	bytes := []byte{}
+
+	bytes = append(bytes, []byte(su.Alcohol.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.Alcohol.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.Alcohol.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.Alcohol.Duration)...)
+	bytes = append(bytes, []byte(su.Alcohol.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.Alcohol.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.Cannabis.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.Cannabis.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.Cannabis.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.Cannabis.Duration)...)
+	bytes = append(bytes, []byte(su.Cannabis.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.Cannabis.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.StimulantsA.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.StimulantsA.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.StimulantsA.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.StimulantsA.Duration)...)
+	bytes = append(bytes, []byte(su.StimulantsA.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.StimulantsA.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.StimulantsB.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.StimulantsB.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.StimulantsB.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.StimulantsB.Duration)...)
+	bytes = append(bytes, []byte(su.StimulantsB.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.StimulantsB.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.Amphetamines.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.Amphetamines.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.Amphetamines.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.Amphetamines.Duration)...)
+	bytes = append(bytes, []byte(su.Amphetamines.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.Amphetamines.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.Tranquilizers.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.Tranquilizers.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.Tranquilizers.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.Tranquilizers.Duration)...)
+	bytes = append(bytes, []byte(su.Tranquilizers.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.Tranquilizers.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.Sedatives.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.Sedatives.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.Sedatives.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.Sedatives.Duration)...)
+	bytes = append(bytes, []byte(su.Sedatives.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.Sedatives.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.Heroin.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.Heroin.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.Heroin.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.Heroin.Duration)...)
+	bytes = append(bytes, []byte(su.Heroin.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.Heroin.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.IllicitMethadone.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.IllicitMethadone.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.IllicitMethadone.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.IllicitMethadone.Duration)...)
+	bytes = append(bytes, []byte(su.IllicitMethadone.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.IllicitMethadone.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.OtherOpioids.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.OtherOpioids.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.OtherOpioids.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.OtherOpioids.Duration)...)
+	bytes = append(bytes, []byte(su.OtherOpioids.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.OtherOpioids.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.Hallucinogens.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.Hallucinogens.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.Hallucinogens.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.Hallucinogens.Duration)...)
+	bytes = append(bytes, []byte(su.Hallucinogens.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.Hallucinogens.CurrentlyUsing))...)
+
+	bytes = append(bytes, []byte(su.Inhalants.Category)...)
+	bytes = append(bytes, []byte(strconv.Itoa(int(su.Inhalants.AgeOfFirstUsed)))...)
+	bytes = append(bytes, []byte(su.Inhalants.AmountAndFrequency)...)
+	bytes = append(bytes, []byte(su.Inhalants.Duration)...)
+	bytes = append(bytes, []byte(su.Inhalants.LastUsage)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(su.Inhalants.CurrentlyUsing))...)
+	
+	for _, each := range su.Others {
+		bytes = append(bytes, []byte(each.Category)...)
+		bytes = append(bytes, []byte(strconv.Itoa(int(each.AgeOfFirstUsed)))...)
+		bytes = append(bytes, []byte(each.AmountAndFrequency)...)
+		bytes = append(bytes, []byte(each.Duration)...)
+		bytes = append(bytes, []byte(each.LastUsage)...)
+		bytes = append(bytes, []byte(strconv.FormatBool(each.CurrentlyUsing))...)
+	}
+
+	return bytes
+}
+
+func (emr *EMR) Bytable() []byte {
+	plate := emr.PersonalData.ByteMe()
+	plate = append(plate, emr.CurrentMedications.ByteMe()...)
+	plate = append(plate, emr.PastMedicalHistory.ByteMe()...)
+	plate = append(plate, emr.PersonalHistory.ByteMe()...)
+	plate = append(plate, emr.FamilyHistory.ByteMe()...)
+	plate = append(plate, emr.SystemsReview.ByteMe()...)
+	plate = append(plate, emr.SubstanceUse.ByteMe()...)
+	return plate
 }
