@@ -1,7 +1,7 @@
 package main
 
 import (
-	"model"
+	// "model"
 )
 
 func main() {
@@ -38,5 +38,4 @@ func main() {
 	//}
 
 	//model.EncryptBlock()
-	model.JSONToEMR()
 }
