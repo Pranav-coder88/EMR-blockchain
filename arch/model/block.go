@@ -101,7 +101,3 @@ func (block *Block) Print() {
 func (block *Block) IsValid() bool {
 	return bytes.Equal(block.Hash, block.generateHash())
 }
-
-func (block *Block) Read(filepath string) {
-	block.Transaction.Read(filepath)
-}
