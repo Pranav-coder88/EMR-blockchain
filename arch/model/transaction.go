@@ -1,5 +1,19 @@
 package model
 
+import (
+	"encoding/json"
+)
+
 type Transaction struct {
-	Message string `json:"message"`
+	Record EMR
+}
+
+func (transaction *Transaction) Read(filepath string) {
+	transaction.Record = *JSONToEMR(filepath)
+}
+
+func (transaction *Transaction) Writable() string {
+	var onPaper string
+	json.Unmarshal(transaction.Record.Bytable(), &onPaper)
+	return onPaper
 }
