@@ -493,8 +493,8 @@ type PersonalData struct {
 	SymptomsBrief         string    `json:"SymptomsBrief"`
 	PrevPractitioners     string    `json:"PrevPractitioners"`
 	PsychHospitalizations string    `json:"PsychHospitalizations"`
-	StatusECT             string    `json:"StatusECT"`
-	StatusPsychotherapy   string    `json:"StatusPsychotherapy"`
+	StatusECT             bool    `json:"StatusECT"`
+	StatusPsychotherapy   bool    `json:"StatusPsychotherapy"`
 }
 
 type CurrentMedications struct {
@@ -608,8 +608,8 @@ func (pd *PersonalData) ByteMe() []byte {
 	bytes = append(bytes, []byte(pd.SymptomsBrief)...)
 	bytes = append(bytes, []byte(pd.PrevPractitioners)...)
 	bytes = append(bytes, []byte(pd.PsychHospitalizations)...)
-	bytes = append(bytes, []byte(pd.StatusECT)...)
-	bytes = append(bytes, []byte(pd.StatusPsychotherapy)...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pd.StatusECT))...)
+	bytes = append(bytes, []byte(strconv.FormatBool(pd.StatusPsychotherapy))...)
 	return bytes
 }
 
@@ -888,7 +888,8 @@ func (su *SubstanceUse) ByteMe() []byte {
 }
 
 func (emr *EMR) Bytable() []byte {
-	plate := emr.PersonalData.ByteMe()
+	plate := []byte{}
+	plate = append(plate, emr.PersonalData.ByteMe()...)
 	plate = append(plate, emr.CurrentMedications.ByteMe()...)
 	plate = append(plate, emr.PastMedicalHistory.ByteMe()...)
 	plate = append(plate, emr.PersonalHistory.ByteMe()...)
