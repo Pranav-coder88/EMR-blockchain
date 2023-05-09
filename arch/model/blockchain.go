@@ -2,9 +2,7 @@ package model
 
 import (
 	"bytes"
-	"encoding/hex"
 	"errors"
-	"strconv"
 )
 
 // A Blockchain facilitates processing of transactions through consensus of blocks.
@@ -34,9 +32,11 @@ func NewBlockchain(difficulty int) *Blockchain {
 
 // Adding a block to the blockchain.
 func (blockchain *Blockchain) addBlock(blockData []Transaction) {
-	statement := NewBlock(blockData, blockchain.Chain.Latest.Hash)
-	statement.Mine(blockchain.difficulty)
-	blockchain.Chain.Add(statement)
+	for _, block := range blockData {
+		statement := NewBlock(block, blockchain.Chain.Latest.Hash)
+		statement.Mine(blockchain.difficulty)
+		blockchain.Chain.Add(statement)
+	}
 }
 
 // AddTransactions Adds transactions to the blockchain.
@@ -52,9 +52,6 @@ func (blockchain *Blockchain) AddTransactions(transactionData []Transaction) err
 
 // ProcessPendingTransactions  , Processes the pending transactions. (Currently only supports PoW)
 func (blockchain *Blockchain) ProcessPendingTransactions(rewardAddress walletType) {
-	rewardTx := Transaction{"genesis rewards " + strconv.FormatFloat(float64(blockchain.reward), 'f', 2, 64) + " coin(s) to " + hex.EncodeToString(rewardAddress)}
-	blockchain.transactionBuffer = append(blockchain.transactionBuffer, rewardTx)
-
 	blockchain.addBlock(blockchain.transactionBuffer)
 	blockchain.transactionBuffer = blockchain.transactionBuffer[:0]
 }

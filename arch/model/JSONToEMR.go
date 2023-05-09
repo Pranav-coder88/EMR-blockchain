@@ -10,15 +10,14 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 )
 
-func JSONToEMR() {
+func JSONToEMR(location string) *EMR {
 
 	// Opening JSON File
-	file, err := os.Open("./model/dummy.json")
+	file, err := os.Open(location)
 	if err != nil {
 		log.Fatalln("Error opening file:", err)
 	}
@@ -54,6 +53,5 @@ func JSONToEMR() {
 
 	}
 
-	//Printing Data in object format
-	fmt.Println(patientData)
+	return &patientData
 }
